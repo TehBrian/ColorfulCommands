@@ -18,6 +18,10 @@ public class ColorfulArguments implements ClientModInitializer {
         return INSTANCE;
     }
 
+    public static Logger logger() {
+        return LOGGER;
+    }
+
     @Override
     public void onInitializeClient() {
         INSTANCE = this;

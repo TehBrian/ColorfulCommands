@@ -1,10 +1,10 @@
 package dev.tehbrian.colorfularguments.config;
 
-import dev.tehbrian.colorfularguments.Color;
+import dev.tehbrian.colorfularguments.util.Colors;
+import dev.tehbrian.colorfularguments.util.DefaultColors;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.text.Style;
-import net.minecraft.text.TextColor;
-import net.minecraft.util.Formatting;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.ConfigurationOptions;
@@ -14,10 +14,9 @@ import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
 
-import static dev.tehbrian.colorfularguments.Color.hexToTextColor;
-import static dev.tehbrian.colorfularguments.Color.textColorToHex;
+import static dev.tehbrian.colorfularguments.util.Colors.hexToTextColor;
+import static dev.tehbrian.colorfularguments.util.Colors.textColorToHex;
 
 public class Config {
 
@@ -25,51 +24,48 @@ public class Config {
             == ColorfulArguments ==
             Made by TehBrian!! ;D
             
-            Discord:  https://thbn.me/discord
-            GitHub:   https://github.com/TehBrian/ColorfulArguments
             Modrinth: https://modrinth.com/mod/ColorfulArguments
+            GitHub:   https://github.com/TehBrian/ColorfulArguments
+            Discord:  https://thbn.me/discord
             
             Below are a few hand-picked presets.
 
             -- Minecraft Default --
-            info-color: "AAAAAA"
-            error-color: "FF5555"
-            highlight-colors: [ "55FFFF", "FFFF55", "55FF55", "FF55FF", "FFAA00" ]
+            unparsed-color: "FF5555"
+            literal-color: "AAAAAA"
+            argument-colors: [ "55FFFF", "FFFF55", "55FF55", "FF55FF", "FFAA00" ]
             
             -- Cotton Candy --
-            highlight-colors: [ "5BCEFA", "F5A9B8", "FFFFFF", "F5A9B8", "5BCEFA" ]
+            argument-colors: [ "5BCEFA", "F5A9B8", "FFFFFF", "F5A9B8", "5BCEFA" ]
             
             -- Synthwave --
-            highlight-colors: [ "D60270", "9B4F96", "0038A8" ]
+            argument-colors: [ "D60270", "9B4F96", "0038A8" ]
             
             -- Sunset --
-            highlight-colors: [ "D52D00", "EF7627", "FF9A56", "FFFFFF", "D162A4", "B55690", "A30262" ]
+            argument-colors: [ "D52D00", "EF7627", "FF9A56", "FFFFFF", "D162A4", "B55690", "A30262" ]
             
             -- Hackerman --
-            info-color: "FFFFFF"
-            error-color: "FF0000"
-            highlight-colors: [ "00FF00" ]
+            unparsed-color: "FF0000"
+            literal-color: "FFFFFF"
+            argument-colors: [ "00FF00" ]
             
             -- Pre 1.13 --
-            info-color: "FFFFFF"
-            error-color: "FFFFFF"
-            highlight-colors: [ "FFFFFF" ]
+            unparsed-color: "FFFFFF"
+            literal-color: "FFFFFF"
+            argument-colors: [ "FFFFFF" ]
             """;
 
     private final HoconConfigurationLoader loader;
     private CommentedConfigurationNode rootNode;
 
-    // hardcoded default styles as per 1.20.6.
-    // used as fallback prior to config initialization.
-    private TextColor infoColor = TextColor.fromFormatting(Formatting.GRAY);
-    private TextColor errorColor = TextColor.fromFormatting(Formatting.RED);
-    private List<TextColor> highlightColors = Stream.of(Formatting.AQUA, Formatting.YELLOW, Formatting.GREEN, Formatting.LIGHT_PURPLE, Formatting.GOLD).map(TextColor::fromFormatting).toList();
+    private TextColor unparsedColor = DefaultColors.UNPARSED;
+    private TextColor literalColor = DefaultColors.LITERAL;
+    private List<TextColor> argumentColors = DefaultColors.ARGUMENT;
 
-    // styles are cached (set at config load) rather
-    // than re-generated every xStyle() call.
-    private Style infoStyle = Style.EMPTY.withColor(infoColor);
-    private Style errorStyle = Style.EMPTY.withColor(errorColor);
-    private List<Style> highlightStyles = highlightColors.stream().map(Style.EMPTY::withColor).toList();
+    // styles are cached (set at config load) rather than re-generated every xStyle() call.
+    private Style unparsedStyle = Style.EMPTY.withColor(unparsedColor);
+    private Style literalStyle = Style.EMPTY.withColor(literalColor);
+    private List<Style> argumentStyles = argumentColors.stream().map(Style.EMPTY::withColor).toList();
 
     public Config() {
         this.loader = HoconConfigurationLoader.builder()
@@ -80,50 +76,50 @@ public class Config {
                 .build();
     }
 
-    public Style infoStyle() {
-        return this.infoStyle;
+    public Style unparsedStyle() {
+        return this.unparsedStyle;
     }
 
-    public Style errorStyle() {
-        return this.errorStyle;
+    public Style literalStyle() {
+        return this.literalStyle;
     }
 
-    public List<Style> highlightStyles() {
-        return this.highlightStyles;
+    public List<Style> argumentStyles() {
+        return this.argumentStyles;
     }
 
-    public TextColor infoColor() {
-        return this.infoColor;
+    public TextColor unparsedColor() {
+        return this.unparsedColor;
     }
 
-    public TextColor errorColor() {
-        return this.errorColor;
+    public TextColor literalColor() {
+        return this.literalColor;
     }
 
-    public List<TextColor> highlightColors() {
-        return this.highlightColors;
+    public List<TextColor> argumentColors() {
+        return this.argumentColors;
     }
 
-    public void infoColor(final TextColor color) {
-        this.infoColor = color;
-        this.infoStyle = Style.EMPTY.withColor(this.infoColor);
+    public void unparsedColor(final TextColor color) {
+        this.unparsedColor = color;
+        this.unparsedStyle = Style.EMPTY.withColor(this.unparsedColor);
     }
 
-    public void errorColor(final TextColor color) {
-        this.errorColor = color;
-        this.errorStyle = Style.EMPTY.withColor(this.errorColor);
+    public void literalColor(final TextColor color) {
+        this.literalColor = color;
+        this.literalStyle = Style.EMPTY.withColor(this.literalColor);
     }
 
-    public void highlightColors(final List<TextColor> colors) {
-        this.highlightColors = colors;
-        this.highlightStyles = this.highlightColors.stream().map(Style.EMPTY::withColor).toList();
+    public void argumentColors(final List<TextColor> colors) {
+        this.argumentColors = colors;
+        this.argumentStyles = this.argumentColors.stream().map(Style.EMPTY::withColor).toList();
     }
 
     public void save() throws ConfigurateException {
         final Data data = new Data(
-                textColorToHex(this.infoColor()),
-                textColorToHex(this.errorColor()),
-                this.highlightColors().stream().map(Color::textColorToHex).toList()
+                textColorToHex(this.literalColor()),
+                textColorToHex(this.unparsedColor()),
+                this.argumentColors().stream().map(Colors::textColorToHex).toList()
         );
 
         this.rootNode.set(Data.class, data);
@@ -135,15 +131,15 @@ public class Config {
         this.rootNode = this.loader.load();
         data = Objects.requireNonNull(this.rootNode.get(Data.class));
 
-        this.infoColor(hexToTextColor(data.infoColor()));
-        this.errorColor(hexToTextColor(data.errorColor()));
-        this.highlightColors(data.highlightColors().stream().map(Color::hexToTextColor).toList());
+        this.literalColor(hexToTextColor(data.literalColor()));
+        this.unparsedColor(hexToTextColor(data.unparsedColor()));
+        this.argumentColors(data.argumentColors().stream().map(Colors::hexToTextColor).toList());
     }
 
     @ConfigSerializable
-    private record Data(String infoColor,
-                        String errorColor,
-                        List<String> highlightColors) {
+    private record Data(String unparsedColor,
+                        String literalColor,
+                        List<String> argumentColors) {
 
     }
 

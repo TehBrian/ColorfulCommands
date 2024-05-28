@@ -2,13 +2,15 @@
   "schemaVersion": 1,
   "id": "colorfularguments",
   "version": "${version}",
-  "name": "ColorfulArguments",
+  "name": "Colorful Arguments",
   "description": "Configure your command argument highlighting colors.",
   "authors": [
     "TehBrian"
   ],
   "contact": {
-    "repo": "https://github.com/TehBrian/ColorfulArguments"
+    "homepage": "https://modrinth.com/mods/ColorfulArguments",
+    "sources": "https://github.com/TehBrian/ColorfulArguments",
+    "issues": "https://github.com/TehBrian/ColorfulArguments/issues"
   },
   "license": "MIT",
   "icon": "assets/colorfularguments/icon.png",
@@ -18,7 +20,7 @@
       "dev.tehbrian.colorfularguments.ColorfulArguments"
     ],
     "modmenu": [
-      "dev.tehbrian.colorfularguments.config.ModMenu"
+      "dev.tehbrian.colorfularguments.compat.ModMenuCompat"
     ]
   },
   "mixins": [
@@ -28,5 +30,12 @@
     "fabricloader": ">=${loader_version}",
     "fabric": "*",
     "minecraft": "${minecraft_version}"
+  },
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.discord": "https://thbn.me/discord"
+      }
+    }
   }
 }
