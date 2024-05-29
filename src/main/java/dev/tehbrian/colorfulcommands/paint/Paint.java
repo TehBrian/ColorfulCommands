@@ -27,31 +27,32 @@ public class Paint {
     }
 
     public static Paint of(final TextColor textColor) {
-        return new Paint(new Color(textColor.getValue()));
-    }
-
-    public static Paint of(final String hex) {
-        return new Paint(new Color(Integer.decode("0x" + hex)));
+        return Paint.of(textColor.getValue());
     }
 
     public static Paint of(final ChatFormatting chatFormatting) {
         return Paint.of(Objects.requireNonNull(TextColor.fromLegacyFormat(chatFormatting)));
     }
 
-    public Color toColor() {
+    public static Paint of(final String hex) {
+        return Paint.of(Integer.decode("0x" + hex));
+    }
+
+    public Color color() {
         return this.color;
     }
 
-    public int toRgb() {
-        return this.toColor().getRGB();
+    public int rgb() {
+        // the bitmask tosses the alpha, which we do not want.
+        return this.color().getRGB() & 0x00_ff_ff_ff;
     }
 
-    public TextColor toTextColor() {
-        return TextColor.fromRgb(this.color.getRGB());
+    public TextColor textColor() {
+        return TextColor.fromRgb(this.rgb());
     }
 
-    public String toHex() {
-        return Integer.toHexString(this.color.getRGB()).toUpperCase(Locale.ROOT);
+    public String hex() {
+        return Integer.toHexString(this.rgb()).toUpperCase(Locale.ROOT);
     }
 
 }

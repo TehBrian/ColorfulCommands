@@ -22,7 +22,7 @@ public class CommandSuggestionsMixin {
             )
     )
     private static Style unparsedStyle() {
-        return ColorfulCommands.get().config().literalStyle();
+        return ColorfulCommands.get().config().unparsedStyle();
     }
 
     @Redirect(
@@ -34,7 +34,7 @@ public class CommandSuggestionsMixin {
             )
     )
     private static Style literalStyle() {
-        return ColorfulCommands.get().config().unparsedStyle();
+        return ColorfulCommands.get().config().literalStyle();
     }
 
     @Redirect(

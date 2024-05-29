@@ -16,13 +16,10 @@ public class PaintSerializer implements TypeSerializer<Paint> {
     }
 
     @Override
-    public Paint deserialize(final Type type, final ConfigurationNode source) throws SerializationException {
-//        if (source.isNull()) {
-//            return null;
-//        }
-        // !!! also check that it's n range?
-        System.out.println(source.getInt());
-
+    public Paint deserialize(final Type type, final ConfigurationNode source) {
+        if (source.isNull()) {
+            return null;
+        }
         return Paint.of(source.getInt());
     }
 
@@ -32,7 +29,7 @@ public class PaintSerializer implements TypeSerializer<Paint> {
             target.raw(null);
             return;
         }
-
-        target.set(paint.toRgb());
+        target.set(paint.rgb());
     }
+
 }

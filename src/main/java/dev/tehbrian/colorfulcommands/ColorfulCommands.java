@@ -29,21 +29,21 @@ public class ColorfulCommands implements ClientModInitializer {
 
         this.config = new Config();
 
-//        try {
-//            this.config.load();
-//        } catch (final ConfigurateException e) {
-//            LOGGER.error("Failed to load config.", e);
-//        } catch (final NullPointerException e) {
-//            // fine, just means that they didn't have a config.
-//        } catch (final NumberFormatException e) {
-//            LOGGER.error("Boo!");
-//        }
-//
-//        try {
-//            this.config.save();
-//        } catch (final ConfigurateException e) {
-//            LOGGER.error("Failed to save config.", e);
-//        }
+        try {
+            this.config.load();
+        } catch (final ConfigurateException e) {
+            LOGGER.error("CE.", e);
+        } catch (final NullPointerException e) {
+            LOGGER.error("NPE.", e);
+        } catch (final NumberFormatException e) {
+            LOGGER.error("NFE.", e);
+        }
+
+        try {
+            this.config.save();
+        } catch (final ConfigurateException e) {
+            LOGGER.error("Failed to save config.", e);
+        }
     }
 
     public Config config() {

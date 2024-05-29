@@ -59,9 +59,9 @@ public class Config {
     private List<Paint> argumentPaints = DefaultPaints.ARGUMENT;
 
     // styles are cached (set at config load) rather than re-generated every xStyle() call.
-    private Style unparsedStyle = Style.EMPTY.withColor(this.unparsedPaint().toTextColor());
-    private Style literalStyle = Style.EMPTY.withColor(this.literalPaint().toTextColor());
-    private List<Style> argumentStyles = this.argumentPaints().stream().map(Paint::toTextColor).map(Style.EMPTY::withColor).toList();
+    private Style unparsedStyle = Style.EMPTY.withColor(this.unparsedPaint().textColor());
+    private Style literalStyle = Style.EMPTY.withColor(this.literalPaint().textColor());
+    private List<Style> argumentStyles = this.argumentPaints().stream().map(Paint::textColor).map(Style.EMPTY::withColor).toList();
 
     public Config() {
         this.loader = HoconConfigurationLoader.builder()
@@ -99,17 +99,17 @@ public class Config {
 
     public void unparsedPaint(final Paint paint) {
         this.unparsedPaint = paint;
-        this.unparsedStyle = Style.EMPTY.withColor(this.unparsedPaint().toTextColor());
+        this.unparsedStyle = Style.EMPTY.withColor(this.unparsedPaint().textColor());
     }
 
     public void literalPaint(final Paint paint) {
         this.literalPaint = paint;
-        this.literalStyle = Style.EMPTY.withColor(this.literalPaint().toTextColor());
+        this.literalStyle = Style.EMPTY.withColor(this.literalPaint().textColor());
     }
 
     public void argumentPaints(final List<Paint> paints) {
         this.argumentPaints = paints;
-        this.argumentStyles = this.argumentPaints().stream().map(Paint::toTextColor).map(Style.EMPTY::withColor).toList();
+        this.argumentStyles = this.argumentPaints().stream().map(Paint::textColor).map(Style.EMPTY::withColor).toList();
     }
 
     public void save() throws ConfigurateException {

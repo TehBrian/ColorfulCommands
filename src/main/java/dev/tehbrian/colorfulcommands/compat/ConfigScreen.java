@@ -16,6 +16,7 @@ import dev.tehbrian.colorfulcommands.paint.DefaultPaints;
 import dev.tehbrian.colorfulcommands.paint.Paint;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import org.spongepowered.configurate.ConfigurateException;
 
 import java.awt.Color;
 import java.util.List;
@@ -28,8 +29,8 @@ public class ConfigScreen {
         final Option<Color> unparsedOption = Option.<Color>createBuilder()
                 .name(Component.literal("Unparsed Color"))
                 .description(OptionDescription.of(Component.literal("Color used for unparsed text.")))
-                .binding(DefaultPaints.UNPARSED.toColor(),
-                        () -> config.unparsedPaint().toColor(),
+                .binding(DefaultPaints.UNPARSED.color(),
+                        () -> config.unparsedPaint().color(),
                         val -> config.unparsedPaint(Paint.of(val)))
                 .controller(ColorControllerBuilder::create)
                 .build();
@@ -37,8 +38,8 @@ public class ConfigScreen {
         final Option<Color> literalOption = Option.<Color>createBuilder()
                 .name(Component.literal("Literal Color"))
                 .description(OptionDescription.of(Component.literal("Color used for literal text.")))
-                .binding(DefaultPaints.LITERAL.toColor(),
-                        () -> config.literalPaint().toColor(),
+                .binding(DefaultPaints.LITERAL.color(),
+                        () -> config.literalPaint().color(),
                         val -> config.literalPaint(Paint.of(val)))
                 .controller(ColorControllerBuilder::create)
                 .build();
@@ -46,8 +47,8 @@ public class ConfigScreen {
         final ListOption<Color> argumentOption = ListOption.<Color>createBuilder()
                 .name(Component.literal("Argument Colors"))
                 .description(OptionDescription.of(Component.literal("Colors used for argument text.")))
-                .binding(DefaultPaints.ARGUMENT.stream().map(Paint::toColor).toList(),
-                        () -> config.argumentPaints().stream().map(Paint::toColor).toList(),
+                .binding(DefaultPaints.ARGUMENT.stream().map(Paint::color).toList(),
+                        () -> config.argumentPaints().stream().map(Paint::color).toList(),
                         val -> config.argumentPaints(val.stream().map(Paint::of).toList()))
                 .controller(ColorControllerBuilder::create)
                 .initial(Color.WHITE)
@@ -112,6 +113,13 @@ public class ConfigScreen {
 
         return YetAnotherConfigLib.createBuilder()
                 .title(Component.literal("Colorful Commands Configuration"))
+                .save(() -> {
+                    try {
+                        config.save();
+                    } catch (final ConfigurateException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
                 .category(ConfigCategory.createBuilder()
                         .name(Component.literal("Colorful Commands Configuration"))
                         .tooltip(Component.literal("All configuration for Colorful Commands."))
@@ -121,8 +129,7 @@ public class ConfigScreen {
                                 .option(unparsedOption)
                                 .option(literalOption)
                                 .build())
-                        // list option: can't be in a group.
-                        .option(argumentOption)
+                        .group(argumentOption)
                         .group(OptionGroup.createBuilder()
                                 .name(Component.literal("Load Preset"))
                                 .description(OptionDescription.of(Component.literal("Load a saved preset.")))
