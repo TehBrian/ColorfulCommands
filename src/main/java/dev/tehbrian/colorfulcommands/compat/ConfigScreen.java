@@ -12,14 +12,14 @@ import dev.isxander.yacl3.api.controller.DropdownStringControllerBuilder;
 import dev.isxander.yacl3.api.controller.StringControllerBuilder;
 import dev.tehbrian.colorfulcommands.ColorfulCommands;
 import dev.tehbrian.colorfulcommands.config.Config;
-import dev.tehbrian.colorfulcommands.paint.DefaultPaints;
+import dev.tehbrian.colorfulcommands.paint.Default;
 import dev.tehbrian.colorfulcommands.paint.Paint;
+import dev.tehbrian.colorfulcommands.paint.Palette;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import org.spongepowered.configurate.ConfigurateException;
 
 import java.awt.Color;
-import java.util.List;
 
 public class ConfigScreen {
 
@@ -29,7 +29,7 @@ public class ConfigScreen {
         final Option<Color> unparsedOption = Option.<Color>createBuilder()
                 .name(Component.literal("Unparsed Color"))
                 .description(OptionDescription.of(Component.literal("Color used for unparsed text.")))
-                .binding(DefaultPaints.UNPARSED.color(),
+                .binding(Default.UNPARSED_PAINT.color(),
                         () -> config.unparsedPaint().color(),
                         val -> config.unparsedPaint(Paint.of(val)))
                 .controller(ColorControllerBuilder::create)
@@ -38,7 +38,7 @@ public class ConfigScreen {
         final Option<Color> literalOption = Option.<Color>createBuilder()
                 .name(Component.literal("Literal Color"))
                 .description(OptionDescription.of(Component.literal("Color used for literal text.")))
-                .binding(DefaultPaints.LITERAL.color(),
+                .binding(Default.LITERAL_PAINT.color(),
                         () -> config.literalPaint().color(),
                         val -> config.literalPaint(Paint.of(val)))
                 .controller(ColorControllerBuilder::create)
@@ -47,7 +47,7 @@ public class ConfigScreen {
         final ListOption<Color> argumentOption = ListOption.<Color>createBuilder()
                 .name(Component.literal("Argument Colors"))
                 .description(OptionDescription.of(Component.literal("Colors used for argument text.")))
-                .binding(DefaultPaints.ARGUMENT.stream().map(Paint::color).toList(),
+                .binding(Default.ARGUMENT_PAINTS.stream().map(Paint::color).toList(),
                         () -> config.argumentPaints().stream().map(Paint::color).toList(),
                         val -> config.argumentPaints(val.stream().map(Paint::of).toList()))
                 .controller(ColorControllerBuilder::create)
@@ -63,11 +63,15 @@ public class ConfigScreen {
                         () -> "",
                         val -> {
                         })
-                .controller(option -> DropdownStringControllerBuilder.create(option).allowEmptyValue(true)
-                        .values(List.of("1", "2", "omfg I'm a string", "5")))
+                .controller(option -> DropdownStringControllerBuilder.create(option)
+                        .allowEmptyValue(true)
+                        .values(config.presets().keySet().stream().sorted().toList()))
                 .listener((option, value) -> {
                     if (load.button != null) {
                         load.button.setAvailable(!value.isEmpty());
+                    }
+                    if (load.deleteButton != null) {
+                        load.deleteButton.setAvailable(!value.isEmpty());
                     }
                 })
                 .build();
@@ -77,7 +81,21 @@ public class ConfigScreen {
                 .text(Component.empty())
                 .description(OptionDescription.of(Component.literal("Load the selected preset.")))
                 .action((screen, option) -> {
-                    ColorfulCommands.logger().info(load.presetDropdown.pendingValue());
+                    final var preset = config.presets().get(load.presetDropdown.pendingValue());
+                    unparsedOption.requestSet(preset.unparsedPaint().color());
+                    literalOption.requestSet(preset.literalPaint().color());
+                    argumentOption.requestSet(preset.argumentPaints().stream().map(Paint::color).toList());
+                    load.presetDropdown.forgetPendingValue();
+                })
+                .available(false)
+                .build();
+
+        load.deleteButton = ButtonOption.createBuilder()
+                .name(Component.literal("Delete"))
+                .text(Component.empty())
+                .description(OptionDescription.of(Component.literal("Delete the selected preset.")))
+                .action((screen, option) -> {
+                    config.presets().remove(load.presetDropdown.pendingValue());
                     load.presetDropdown.forgetPendingValue();
                 })
                 .available(false)
@@ -87,7 +105,10 @@ public class ConfigScreen {
 
         save.presetOption = Option.<String>createBuilder()
                 .name(Component.literal("Preset Name"))
-                .description(OptionDescription.of(Component.literal("The name of the preset to save.\n\nIf a preset by this name already exists, it will be overwritten.")))
+                .description(OptionDescription.of(Component.literal("""
+                        The name of the preset to save.
+
+                        If a preset by this name already exists, it will be overwritten.""")))
                 .binding("",
                         () -> "",
                         val -> {
@@ -105,7 +126,11 @@ public class ConfigScreen {
                 .text(Component.empty())
                 .description(OptionDescription.of(Component.literal("Save a new preset with the given name.")))
                 .action((screen, option) -> {
-                    ColorfulCommands.logger().info(save.presetOption.pendingValue());
+                    config.presets().put(save.presetOption.pendingValue(), new Palette(
+                            Paint.of(unparsedOption.pendingValue()),
+                            Paint.of(literalOption.pendingValue()),
+                            argumentOption.pendingValue().stream().map(Paint::of).toList()
+                    ));
                     save.presetOption.forgetPendingValue();
                 })
                 .available(false)
@@ -150,6 +175,7 @@ public class ConfigScreen {
     private static class Load {
         Option<String> presetDropdown = null;
         ButtonOption button = null;
+        ButtonOption deleteButton = null;
     }
 
     private static class Save {

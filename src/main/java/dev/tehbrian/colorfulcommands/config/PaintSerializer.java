@@ -16,11 +16,11 @@ public class PaintSerializer implements TypeSerializer<Paint> {
     }
 
     @Override
-    public Paint deserialize(final Type type, final ConfigurationNode source) {
+    public @Nullable Paint deserialize(final Type type, final ConfigurationNode source) {
         if (source.isNull()) {
             return null;
         }
-        return Paint.of(source.getInt());
+        return Paint.of(source.getString());
     }
 
     @Override
@@ -29,7 +29,7 @@ public class PaintSerializer implements TypeSerializer<Paint> {
             target.raw(null);
             return;
         }
-        target.set(paint.rgb());
+        target.set(paint.hex());
     }
 
 }

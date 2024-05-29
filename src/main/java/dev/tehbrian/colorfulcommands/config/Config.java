@@ -1,7 +1,8 @@
 package dev.tehbrian.colorfulcommands.config;
 
-import dev.tehbrian.colorfulcommands.paint.DefaultPaints;
+import dev.tehbrian.colorfulcommands.paint.Default;
 import dev.tehbrian.colorfulcommands.paint.Paint;
+import dev.tehbrian.colorfulcommands.paint.Palette;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.network.chat.Style;
 import org.spongepowered.configurate.CommentedConfigurationNode;
@@ -12,6 +13,7 @@ import org.spongepowered.configurate.loader.HeaderMode;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class Config {
@@ -24,39 +26,16 @@ public class Config {
             GitHub:   https://github.com/TehBrian/ColorfulCommands
             Discord:  https://thbn.me/discord
                         
-            Below are a few hand-picked presets.
-
-            -- Minecraft Default --
-            unparsed-color: "FF5555"
-            literal-color: "AAAAAA"
-            argument-colors: [ "55FFFF", "FFFF55", "55FF55", "FF55FF", "FFAA00" ]
-                        
-            -- Cotton Candy --
-            argument-colors: [ "5BCEFA", "F5A9B8", "FFFFFF", "F5A9B8", "5BCEFA" ]
-                        
-            -- Synthwave --
-            argument-colors: [ "D60270", "9B4F96", "0038A8" ]
-                        
-            -- Sunset --
-            argument-colors: [ "D52D00", "EF7627", "FF9A56", "FFFFFF", "D162A4", "B55690", "A30262" ]
-                        
-            -- Hackerman --
-            unparsed-color: "FF0000"
-            literal-color: "FFFFFF"
-            argument-colors: [ "00FF00" ]
-                        
-            -- Pre 1.13 --
-            unparsed-color: "FFFFFF"
-            literal-color: "FFFFFF"
-            argument-colors: [ "FFFFFF" ]
+            The colors are saved in HEX format (without the #).
             """;
 
     private final HoconConfigurationLoader loader;
     private CommentedConfigurationNode rootNode;
 
-    private Paint unparsedPaint = DefaultPaints.UNPARSED;
-    private Paint literalPaint = DefaultPaints.LITERAL;
-    private List<Paint> argumentPaints = DefaultPaints.ARGUMENT;
+    private Paint unparsedPaint = Default.UNPARSED_PAINT;
+    private Paint literalPaint = Default.LITERAL_PAINT;
+    private List<Paint> argumentPaints = Default.ARGUMENT_PAINTS;
+    private Map<String, Palette> presets = Default.PRESETS;
 
     // styles are cached (set at config load) rather than re-generated every xStyle() call.
     private Style unparsedStyle = Style.EMPTY.withColor(this.unparsedPaint().textColor());
@@ -73,6 +52,57 @@ public class Config {
                 .build();
     }
 
+    public Paint unparsedPaint() {
+        return this.unparsedPaint;
+    }
+
+    public void unparsedPaint(final Paint paint) {
+        if (paint == null) {
+            this.unparsedPaint = Default.UNPARSED_PAINT;
+        } else {
+            this.unparsedPaint = paint;
+        }
+        this.unparsedStyle = Style.EMPTY.withColor(this.unparsedPaint().textColor());
+    }
+
+    public Paint literalPaint() {
+        return this.literalPaint;
+    }
+
+    public void literalPaint(final Paint paint) {
+        if (paint == null) {
+            this.literalPaint = Default.LITERAL_PAINT;
+        } else {
+            this.literalPaint = paint;
+        }
+        this.literalStyle = Style.EMPTY.withColor(this.literalPaint().textColor());
+    }
+
+    public List<Paint> argumentPaints() {
+        return this.argumentPaints;
+    }
+
+    public void argumentPaints(final List<Paint> paints) {
+        if (paints == null || paints.isEmpty()) {
+            this.argumentPaints = Default.ARGUMENT_PAINTS;
+        } else {
+            this.argumentPaints = paints;
+        }
+        this.argumentStyles = this.argumentPaints().stream().map(Paint::textColor).map(Style.EMPTY::withColor).toList();
+    }
+
+    public Map<String, Palette> presets() {
+        return this.presets;
+    }
+
+    public void presets(final Map<String, Palette> presets) {
+        if (presets == null || presets.isEmpty()) {
+            this.presets = Default.PRESETS;
+        } else {
+            this.presets = presets;
+        }
+    }
+
     public Style unparsedStyle() {
         return this.unparsedStyle;
     }
@@ -85,39 +115,12 @@ public class Config {
         return this.argumentStyles;
     }
 
-    public Paint unparsedPaint() {
-        return this.unparsedPaint;
-    }
-
-    public Paint literalPaint() {
-        return this.literalPaint;
-    }
-
-    public List<Paint> argumentPaints() {
-        return this.argumentPaints;
-    }
-
-    public void unparsedPaint(final Paint paint) {
-        this.unparsedPaint = paint;
-        this.unparsedStyle = Style.EMPTY.withColor(this.unparsedPaint().textColor());
-    }
-
-    public void literalPaint(final Paint paint) {
-        this.literalPaint = paint;
-        this.literalStyle = Style.EMPTY.withColor(this.literalPaint().textColor());
-    }
-
-    public void argumentPaints(final List<Paint> paints) {
-        this.argumentPaints = paints;
-        this.argumentStyles = this.argumentPaints().stream().map(Paint::textColor).map(Style.EMPTY::withColor).toList();
-    }
-
     public void save() throws ConfigurateException {
-        final Data data = new Data(new Data.Palette(
+        final Data data = new Data(new Palette(
                 this.literalPaint(),
                 this.unparsedPaint(),
                 this.argumentPaints()
-        ), List.of());
+        ), this.presets());
 
         this.rootNode.set(Data.class, data);
         this.loader.save(this.rootNode);
@@ -131,20 +134,13 @@ public class Config {
         this.literalPaint(data.active().literalPaint());
         this.unparsedPaint(data.active().unparsedPaint());
         this.argumentPaints(data.active().argumentPaints());
+        this.presets(data.presets());
     }
 
     @ConfigSerializable
     private record Data(Palette active,
-                        List<Palette> presets
+                        Map<String, Palette> presets
     ) {
-
-        @ConfigSerializable
-        private record Palette(Paint unparsedPaint,
-                               Paint literalPaint,
-                               List<Paint> argumentPaints
-        ) {
-
-        }
 
     }
 
