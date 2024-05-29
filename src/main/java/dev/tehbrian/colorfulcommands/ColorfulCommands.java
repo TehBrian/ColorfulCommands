@@ -1,20 +1,20 @@
-package dev.tehbrian.colorfularguments;
+package dev.tehbrian.colorfulcommands;
 
-import dev.tehbrian.colorfularguments.config.Config;
+import dev.tehbrian.colorfulcommands.config.Config;
 import net.fabricmc.api.ClientModInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongepowered.configurate.ConfigurateException;
 
 
-public class ColorfulArguments implements ClientModInitializer {
+public class ColorfulCommands implements ClientModInitializer {
 
-    private static ColorfulArguments INSTANCE;
+    private static ColorfulCommands INSTANCE;
     private static Logger LOGGER;
 
     private Config config;
 
-    public static ColorfulArguments get() {
+    public static ColorfulCommands get() {
         return INSTANCE;
     }
 
@@ -25,7 +25,7 @@ public class ColorfulArguments implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         INSTANCE = this;
-        LOGGER = LoggerFactory.getLogger("ColorfulArguments");
+        LOGGER = LoggerFactory.getLogger("ColorfulCommands");
 
         this.config = new Config();
 

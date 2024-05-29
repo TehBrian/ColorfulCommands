@@ -1,4 +1,4 @@
-package dev.tehbrian.colorfularguments.util;
+package dev.tehbrian.colorfulcommands.util;
 
 import net.minecraft.network.chat.TextColor;
 

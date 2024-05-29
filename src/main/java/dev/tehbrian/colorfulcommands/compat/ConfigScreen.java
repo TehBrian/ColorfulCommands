@@ -1,4 +1,4 @@
-package dev.tehbrian.colorfularguments.compat;
+package dev.tehbrian.colorfulcommands.compat;
 
 import dev.isxander.yacl3.api.ButtonOption;
 import dev.isxander.yacl3.api.ConfigCategory;
@@ -10,10 +10,10 @@ import dev.isxander.yacl3.api.YetAnotherConfigLib;
 import dev.isxander.yacl3.api.controller.ColorControllerBuilder;
 import dev.isxander.yacl3.api.controller.DropdownStringControllerBuilder;
 import dev.isxander.yacl3.api.controller.StringControllerBuilder;
-import dev.tehbrian.colorfularguments.ColorfulArguments;
-import dev.tehbrian.colorfularguments.config.Config;
-import dev.tehbrian.colorfularguments.util.Colors;
-import dev.tehbrian.colorfularguments.util.DefaultColors;
+import dev.tehbrian.colorfulcommands.ColorfulCommands;
+import dev.tehbrian.colorfulcommands.config.Config;
+import dev.tehbrian.colorfulcommands.util.Colors;
+import dev.tehbrian.colorfulcommands.util.DefaultColors;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
@@ -23,7 +23,7 @@ import java.util.List;
 public class ConfigScreen {
 
     public static Screen generate(final Screen parent) {
-        final Config config = ColorfulArguments.get().config();
+        final Config config = ColorfulCommands.get().config();
 
         final Option<Color> unparsedOption = Option.<Color>createBuilder()
                 .name(Component.literal("Unparsed Color"))
@@ -75,7 +75,7 @@ public class ConfigScreen {
                 .name(Component.literal("Load"))
                 .text(Component.empty())
                 .description(OptionDescription.of(Component.literal("Load the selected preset.")))
-                .action((screen, option) -> ColorfulArguments.logger().info(load.presetDropdown.pendingValue()))
+                .action((screen, option) -> ColorfulCommands.logger().info(load.presetDropdown.pendingValue()))
                 .available(false)
                 .build();
 
@@ -100,21 +100,26 @@ public class ConfigScreen {
                 .name(Component.literal("Save"))
                 .text(Component.empty())
                 .description(OptionDescription.of(Component.literal("Save a new preset with the given name.")))
-                .action((screen, option) -> ColorfulArguments.logger().info(save.presetOption.pendingValue()))
+                .action((screen, option) -> ColorfulCommands.logger().info(save.presetOption.pendingValue()))
                 .available(false)
                 .build();
 
         return YetAnotherConfigLib.createBuilder()
-                .title(Component.literal("Colorful Arguments Configuration"))
+                .title(Component.literal("Colorful Commands Configuration"))
                 .category(ConfigCategory.createBuilder()
-                        .name(Component.literal("Colorful Arguments Configuration"))
-                        .tooltip(Component.literal("All configuration for Colorful Arguments."))
-                        .option(unparsedOption)
-                        .option(literalOption)
+                        .name(Component.literal("Colorful Commands Configuration"))
+                        .tooltip(Component.literal("All configuration for Colorful Commands."))
+                        .group(OptionGroup.createBuilder()
+                                .name(Component.literal("Simple Colors"))
+                                .description(OptionDescription.of(Component.literal("Simple, non-alternating colors.")))
+                                .option(unparsedOption)
+                                .option(literalOption)
+                                .build())
+                        // list option: can't be in a group.
                         .option(argumentOption)
                         .group(OptionGroup.createBuilder()
                                 .name(Component.literal("Load Preset"))
-                                .description(OptionDescription.of(Component.literal("Load your saved presets.")))
+                                .description(OptionDescription.of(Component.literal("Load a saved preset.")))
                                 .option(load.presetDropdown)
                                 .option(load.button)
                                 .build())

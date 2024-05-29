@@ -1,4 +1,4 @@
-package dev.tehbrian.colorfularguments.compat;
+package dev.tehbrian.colorfulcommands.compat;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;

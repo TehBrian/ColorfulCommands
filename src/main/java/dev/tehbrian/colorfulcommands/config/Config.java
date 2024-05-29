@@ -1,7 +1,7 @@
-package dev.tehbrian.colorfularguments.config;
+package dev.tehbrian.colorfulcommands.config;
 
-import dev.tehbrian.colorfularguments.util.Colors;
-import dev.tehbrian.colorfularguments.util.DefaultColors;
+import dev.tehbrian.colorfulcommands.util.Colors;
+import dev.tehbrian.colorfulcommands.util.DefaultColors;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
@@ -15,17 +15,17 @@ import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 import java.util.List;
 import java.util.Objects;
 
-import static dev.tehbrian.colorfularguments.util.Colors.hexToTextColor;
-import static dev.tehbrian.colorfularguments.util.Colors.textColorToHex;
+import static dev.tehbrian.colorfulcommands.util.Colors.hexToTextColor;
+import static dev.tehbrian.colorfulcommands.util.Colors.textColorToHex;
 
 public class Config {
 
     private static final String HEADER = """
-            == ColorfulArguments ==
+            == ColorfulCommands ==
             Made by TehBrian!! ;D
             
-            Modrinth: https://modrinth.com/mod/ColorfulArguments
-            GitHub:   https://github.com/TehBrian/ColorfulArguments
+            Modrinth: https://modrinth.com/mod/ColorfulCommands
+            GitHub:   https://github.com/TehBrian/ColorfulCommands
             Discord:  https://thbn.me/discord
             
             Below are a few hand-picked presets.
@@ -72,7 +72,7 @@ public class Config {
                 .headerMode(HeaderMode.PRESET)
                 .defaultOptions(ConfigurationOptions.defaults().header(HEADER))
                 .emitJsonCompatible(true)
-                .path(FabricLoader.getInstance().getConfigDir().resolve("colorfularguments.conf"))
+                .path(FabricLoader.getInstance().getConfigDir().resolve("colorfulcommands.conf"))
                 .build();
     }
 

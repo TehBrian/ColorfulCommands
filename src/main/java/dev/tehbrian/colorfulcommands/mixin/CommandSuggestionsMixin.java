@@ -1,6 +1,6 @@
-package dev.tehbrian.colorfularguments.mixin;
+package dev.tehbrian.colorfulcommands.mixin;
 
-import dev.tehbrian.colorfularguments.ColorfulArguments;
+import dev.tehbrian.colorfulcommands.ColorfulCommands;
 import net.minecraft.client.gui.components.CommandSuggestions;
 import net.minecraft.network.chat.Style;
 import org.objectweb.asm.Opcodes;
@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import java.util.List;
 
 @Mixin(CommandSuggestions.class)
-public class ChatInputSuggestorMixin {
+public class CommandSuggestionsMixin {
 
     @Redirect(
             method = "formatText",
@@ -22,7 +22,7 @@ public class ChatInputSuggestorMixin {
             )
     )
     private static Style unparsedStyle() {
-        return ColorfulArguments.get().config().literalStyle();
+        return ColorfulCommands.get().config().literalStyle();
     }
 
     @Redirect(
@@ -34,7 +34,7 @@ public class ChatInputSuggestorMixin {
             )
     )
     private static Style literalStyle() {
-        return ColorfulArguments.get().config().unparsedStyle();
+        return ColorfulCommands.get().config().unparsedStyle();
     }
 
     @Redirect(
@@ -46,7 +46,7 @@ public class ChatInputSuggestorMixin {
             )
     )
     private static List<Style> argumentStyles() {
-        return ColorfulArguments.get().config().argumentStyles();
+        return ColorfulCommands.get().config().argumentStyles();
     }
 
 }

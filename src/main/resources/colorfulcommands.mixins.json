@@ -1,12 +1,12 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "dev.tehbrian.colorfularguments.mixin",
+  "package": "dev.tehbrian.colorfulcommands.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
   ],
   "client": [
-    "ChatInputSuggestorMixin"
+    "CommandSuggestionsMixin"
   ],
   "injectors": {
     "defaultRequire": 1
