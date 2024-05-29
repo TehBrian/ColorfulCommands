@@ -12,8 +12,8 @@ import dev.isxander.yacl3.api.controller.DropdownStringControllerBuilder;
 import dev.isxander.yacl3.api.controller.StringControllerBuilder;
 import dev.tehbrian.colorfulcommands.ColorfulCommands;
 import dev.tehbrian.colorfulcommands.config.Config;
-import dev.tehbrian.colorfulcommands.util.Colors;
-import dev.tehbrian.colorfulcommands.util.DefaultColors;
+import dev.tehbrian.colorfulcommands.paint.DefaultPaints;
+import dev.tehbrian.colorfulcommands.paint.Paint;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
@@ -28,27 +28,27 @@ public class ConfigScreen {
         final Option<Color> unparsedOption = Option.<Color>createBuilder()
                 .name(Component.literal("Unparsed Color"))
                 .description(OptionDescription.of(Component.literal("Color used for unparsed text.")))
-                .binding(Colors.textColorToColor(DefaultColors.UNPARSED),
-                        () -> Colors.textColorToColor(config.unparsedColor()),
-                        val -> config.unparsedColor(Colors.colorToTextColor(val)))
+                .binding(DefaultPaints.UNPARSED.toColor(),
+                        () -> config.unparsedPaint().toColor(),
+                        val -> config.unparsedPaint(Paint.of(val)))
                 .controller(ColorControllerBuilder::create)
                 .build();
 
         final Option<Color> literalOption = Option.<Color>createBuilder()
                 .name(Component.literal("Literal Color"))
                 .description(OptionDescription.of(Component.literal("Color used for literal text.")))
-                .binding(Colors.textColorToColor(DefaultColors.LITERAL),
-                        () -> Colors.textColorToColor(config.literalColor()),
-                        val -> config.literalColor(Colors.colorToTextColor(val)))
+                .binding(DefaultPaints.LITERAL.toColor(),
+                        () -> config.literalPaint().toColor(),
+                        val -> config.literalPaint(Paint.of(val)))
                 .controller(ColorControllerBuilder::create)
                 .build();
 
         final ListOption<Color> argumentOption = ListOption.<Color>createBuilder()
                 .name(Component.literal("Argument Colors"))
                 .description(OptionDescription.of(Component.literal("Colors used for argument text.")))
-                .binding(DefaultColors.ARGUMENT.stream().map(Colors::textColorToColor).toList(),
-                        () -> config.argumentColors().stream().map(Colors::textColorToColor).toList(),
-                        val -> config.argumentColors(val.stream().map(Colors::colorToTextColor).toList()))
+                .binding(DefaultPaints.ARGUMENT.stream().map(Paint::toColor).toList(),
+                        () -> config.argumentPaints().stream().map(Paint::toColor).toList(),
+                        val -> config.argumentPaints(val.stream().map(Paint::of).toList()))
                 .controller(ColorControllerBuilder::create)
                 .initial(Color.WHITE)
                 .build();
@@ -75,7 +75,10 @@ public class ConfigScreen {
                 .name(Component.literal("Load"))
                 .text(Component.empty())
                 .description(OptionDescription.of(Component.literal("Load the selected preset.")))
-                .action((screen, option) -> ColorfulCommands.logger().info(load.presetDropdown.pendingValue()))
+                .action((screen, option) -> {
+                    ColorfulCommands.logger().info(load.presetDropdown.pendingValue());
+                    load.presetDropdown.forgetPendingValue();
+                })
                 .available(false)
                 .build();
 
@@ -100,7 +103,10 @@ public class ConfigScreen {
                 .name(Component.literal("Save"))
                 .text(Component.empty())
                 .description(OptionDescription.of(Component.literal("Save a new preset with the given name.")))
-                .action((screen, option) -> ColorfulCommands.logger().info(save.presetOption.pendingValue()))
+                .action((screen, option) -> {
+                    ColorfulCommands.logger().info(save.presetOption.pendingValue());
+                    save.presetOption.forgetPendingValue();
+                })
                 .available(false)
                 .build();
 
