@@ -8,7 +8,6 @@ import dev.isxander.yacl3.api.OptionDescription;
 import dev.isxander.yacl3.api.OptionGroup;
 import dev.isxander.yacl3.api.YetAnotherConfigLib;
 import dev.isxander.yacl3.api.controller.ColorControllerBuilder;
-import dev.isxander.yacl3.api.controller.DropdownStringControllerBuilder;
 import dev.isxander.yacl3.api.controller.StringControllerBuilder;
 import dev.tehbrian.colorfulcommands.ColorfulCommands;
 import dev.tehbrian.colorfulcommands.config.Config;
@@ -68,9 +67,7 @@ public class ConfigScreen {
                         () -> "",
                         val -> {
                         })
-                .controller(option -> DropdownStringControllerBuilder.create(option)
-                        .allowEmptyValue(true)
-                        .values(config.presets().keySet().stream().sorted().toList()))
+                .customController(option -> new DynamicDropdownStringController(option, () -> config.presets().keySet().stream().sorted().toList(), true, false))
                 .listener((option, value) -> {
                     if (load.button != null) {
                         load.button.setAvailable(!value.isEmpty());
