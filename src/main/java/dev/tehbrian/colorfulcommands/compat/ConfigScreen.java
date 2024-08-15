@@ -17,18 +17,23 @@ import dev.tehbrian.colorfulcommands.paint.Paint;
 import dev.tehbrian.colorfulcommands.paint.Palette;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import org.spongepowered.configurate.ConfigurateException;
 
 import java.awt.Color;
 
 public class ConfigScreen {
 
+    private static MutableComponent tl(final String string) {
+        return Component.translatable("colorfulcommands." + string);
+    }
+
     public static Screen generate(final Screen parent) {
         final Config config = ColorfulCommands.get().config();
 
         final Option<Color> unparsedOption = Option.<Color>createBuilder()
-                .name(Component.literal("Unparsed Color"))
-                .description(OptionDescription.of(Component.literal("Color used for unparsed text.")))
+                .name(tl("unparsed_color"))
+                .description(OptionDescription.of(tl("unparsed_color_desc")))
                 .binding(Default.UNPARSED_PAINT.color(),
                         () -> config.unparsedPaint().color(),
                         val -> config.unparsedPaint(Paint.of(val)))
@@ -36,8 +41,8 @@ public class ConfigScreen {
                 .build();
 
         final Option<Color> literalOption = Option.<Color>createBuilder()
-                .name(Component.literal("Literal Color"))
-                .description(OptionDescription.of(Component.literal("Color used for literal text.")))
+                .name(tl("literal_color"))
+                .description(OptionDescription.of(tl("literal_color_desc")))
                 .binding(Default.LITERAL_PAINT.color(),
                         () -> config.literalPaint().color(),
                         val -> config.literalPaint(Paint.of(val)))
@@ -45,8 +50,8 @@ public class ConfigScreen {
                 .build();
 
         final ListOption<Color> argumentOption = ListOption.<Color>createBuilder()
-                .name(Component.literal("Argument Colors"))
-                .description(OptionDescription.of(Component.literal("Colors used for argument text.")))
+                .name(tl("argument_colors"))
+                .description(OptionDescription.of(tl("argument_colors_desc")))
                 .binding(Default.ARGUMENT_PAINTS.stream().map(Paint::color).toList(),
                         () -> config.argumentPaints().stream().map(Paint::color).toList(),
                         val -> config.argumentPaints(val.stream().map(Paint::of).toList()))
@@ -57,8 +62,8 @@ public class ConfigScreen {
         final var load = new Load();
 
         load.presetDropdown = Option.<String>createBuilder()
-                .name(Component.literal("Presets"))
-                .description(OptionDescription.of(Component.literal("Select a preset to load.")))
+                .name(tl("load_presets"))
+                .description(OptionDescription.of(tl("load_presets_desc")))
                 .binding("",
                         () -> "",
                         val -> {
@@ -77,9 +82,9 @@ public class ConfigScreen {
                 .build();
 
         load.button = ButtonOption.createBuilder()
-                .name(Component.literal("Load"))
+                .name(tl("load"))
                 .text(Component.empty())
-                .description(OptionDescription.of(Component.literal("Load the selected preset.")))
+                .description(OptionDescription.of(tl("load_desc")))
                 .action((screen, option) -> {
                     final var preset = config.presets().get(load.presetDropdown.pendingValue());
                     unparsedOption.requestSet(preset.unparsedPaint().color());
@@ -91,9 +96,9 @@ public class ConfigScreen {
                 .build();
 
         load.deleteButton = ButtonOption.createBuilder()
-                .name(Component.literal("Delete"))
+                .name(tl("load_delete"))
                 .text(Component.empty())
-                .description(OptionDescription.of(Component.literal("Delete the selected preset.")))
+                .description(OptionDescription.of(tl("load_delete_desc")))
                 .action((screen, option) -> {
                     config.presets().remove(load.presetDropdown.pendingValue());
                     load.presetDropdown.forgetPendingValue();
@@ -104,11 +109,8 @@ public class ConfigScreen {
         final var save = new Save();
 
         save.presetOption = Option.<String>createBuilder()
-                .name(Component.literal("Preset Name"))
-                .description(OptionDescription.of(Component.literal("""
-                        The name of the preset to save.
-
-                        If a preset by this name already exists, it will be overwritten.""")))
+                .name(tl("save_preset"))
+                .description(OptionDescription.of(tl("save_preset_desc")))
                 .binding("",
                         () -> "",
                         val -> {
@@ -122,9 +124,9 @@ public class ConfigScreen {
                 .build();
 
         save.button = ButtonOption.createBuilder()
-                .name(Component.literal("Save"))
+                .name(tl("save"))
                 .text(Component.empty())
-                .description(OptionDescription.of(Component.literal("Save a new preset with the given name.")))
+                .description(OptionDescription.of(tl("save_desc")))
                 .action((screen, option) -> {
                     config.presets().put(save.presetOption.pendingValue(), new Palette(
                             Paint.of(unparsedOption.pendingValue()),
@@ -137,7 +139,7 @@ public class ConfigScreen {
                 .build();
 
         return YetAnotherConfigLib.createBuilder()
-                .title(Component.literal("Colorful Commands Configuration"))
+                .title(tl("title"))
                 .save(() -> {
                     try {
                         config.save();
@@ -146,24 +148,25 @@ public class ConfigScreen {
                     }
                 })
                 .category(ConfigCategory.createBuilder()
-                        .name(Component.literal("Colorful Commands Configuration"))
-                        .tooltip(Component.literal("All configuration for Colorful Commands."))
+                        .name(tl("root"))
+                        .tooltip(tl("root_tooltip"))
                         .group(OptionGroup.createBuilder()
-                                .name(Component.literal("Simple Colors"))
-                                .description(OptionDescription.of(Component.literal("Simple, non-alternating colors.")))
+                                .name(tl("simple"))
+                                .description(OptionDescription.of(tl("simple_tooltip")))
                                 .option(unparsedOption)
                                 .option(literalOption)
                                 .build())
                         .group(argumentOption)
                         .group(OptionGroup.createBuilder()
-                                .name(Component.literal("Load Preset"))
-                                .description(OptionDescription.of(Component.literal("Load a saved preset.")))
+                                .name(tl("load_group"))
+                                .description(OptionDescription.of(tl("load_group_tooltip")))
                                 .option(load.presetDropdown)
                                 .option(load.button)
+                                .option(load.deleteButton)
                                 .build())
                         .group(OptionGroup.createBuilder()
-                                .name(Component.literal("Save Preset"))
-                                .description(OptionDescription.of(Component.literal("Save a preset for later use.")))
+                                .name(tl("save_group"))
+                                .description(OptionDescription.of(tl("save_group_tooltip")))
                                 .option(save.presetOption)
                                 .option(save.button)
                                 .build())
